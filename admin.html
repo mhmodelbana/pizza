@@ -33,7 +33,6 @@
         <p id="login-error" class="hidden bg-red-100 text-red-800 border-2 border-red-600 p-3 font-bold" role="alert"></p>
         <button id="login-submit" class="btn w-full bg-[#FFD500] py-3 text-lg" type="submit"><i class="fa-solid fa-lock ml-2"></i>دخول لوحة التحكم</button>
       </form>
-      <p class="text-xs text-gray-500 font-bold mt-6 leading-6">إنشاء حساب الإدارة يتم من Supabase Dashboard فقط؛ لن يستطيع زائر إنشاء حساب مدير من الصفحة.</p>
       <a href="index.html" class="inline-block mt-3 font-black underline">العودة للموقع ←</a>
     </div>
   </main>
@@ -51,9 +50,10 @@
           <button class="nav-item active" data-view="overview"><i class="fa-solid fa-chart-pie w-5"></i>نظرة عامة</button>
           <button class="nav-item" data-view="orders"><i class="fa-solid fa-receipt w-5"></i>إدارة الطلبات <span id="nav-new-count" class="mr-auto text-xs rounded-full bg-red-500 text-white px-2 py-1">0</span></button>
           <button class="nav-item" data-view="products"><i class="fa-solid fa-pizza-slice w-5"></i>إدارة المنيو</button>
+          <button class="nav-item" data-view="delivery"><i class="fa-solid fa-truck-fast w-5"></i>مناطق التوصيل</button>
           <button class="nav-item" data-view="settings"><i class="fa-solid fa-sliders w-5"></i>إعدادات الموقع</button>
         </nav>
-        <div class="mt-6 bg-[#FFF4B5] border-2 border-black rounded-xl p-3 text-sm font-bold leading-6"><i class="fa-solid fa-shield-halved ml-1"></i>البيانات محمية بصلاحيات قاعدة البيانات. لا تشارك كلمة مرور الإدارة.</div>
+        <div class="mt-6 bg-[#FFF4B5] border-2 border-black rounded-xl p-3 text-sm font-bold leading-6"><i class="fa-solid fa-shield-halved ml-1"></i>استخدم حساب الإدارة المخصص ولا تشارك كلمة المرور.</div>
       </aside>
 
       <main class="min-w-0 flex-1 w-full">
@@ -67,12 +67,12 @@
           </div>
           <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
             <div class="xl:col-span-2 bg-white brutal rounded-2xl p-4 sm:p-5"><div class="flex justify-between items-center gap-3 mb-4"><h2 class="text-xl font-black">أحدث الطلبات</h2><button class="btn bg-[#FFD500]" data-goto="orders">كل الطلبات <i class="fa-solid fa-arrow-left mr-1"></i></button></div><div id="overview-orders" class="space-y-3"><p class="font-bold text-gray-500">جاري تحميل البيانات...</p></div></div>
-            <div class="bg-white brutal rounded-2xl p-4 sm:p-5"><h2 class="text-xl font-black mb-4">حالة التشغيل</h2><div id="status-breakdown" class="space-y-4"></div><div class="mt-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-3 text-sm font-bold text-gray-600">تغيير الحالة من قسم الطلبات يضيف تحديثاً لسجل التتبع تلقائياً.</div></div>
+            <div class="bg-white brutal rounded-2xl p-4 sm:p-5"><h2 class="text-xl font-black mb-4">حالة التشغيل</h2><div id="status-breakdown" class="space-y-4"></div><div class="mt-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-3 text-sm font-bold text-gray-600">تغيير تحديث الحالة يظهر في تتبع الطلب.</div></div>
           </div>
         </section>
 
         <section id="view-orders" class="screen">
-          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6"><div><div class="font-black text-sm text-gray-500">المبيعات والتوصيل</div><h1 class="text-3xl sm:text-4xl font-black">إدارة الطلبات</h1><p class="font-bold text-gray-600 mt-1">حدّث حالة الطلب وسيظهر التحديث عند العميل في صفحة التتبع.</p></div><div class="flex flex-col sm:flex-row gap-2"><input id="orders-search" class="field sm:w-64" placeholder="بحث بالاسم أو رقم الطلب أو الهاتف"><select id="orders-status-filter" class="field sm:w-48"><option value="all">كل الحالات</option><option value="confirmed">الطلب اتأكد</option><option value="preparing">الطلب بيتجهز</option><option value="out_for_delivery">خرج للتوصيل</option><option value="delivered">تم التسليم</option><option value="cancelled">ملغي</option></select></div></div>
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6"><div><div class="font-black text-sm text-gray-500">المبيعات والتوصيل</div><h1 class="text-3xl sm:text-4xl font-black">إدارة الطلبات</h1><p class="font-bold text-gray-600 mt-1">تحديث حالة الطلب يظهر للعميل في التتبع.</p></div><div class="flex flex-col sm:flex-row gap-2"><input id="orders-search" class="field sm:w-64" placeholder="بحث بالاسم أو رقم الطلب أو الهاتف"><select id="orders-status-filter" class="field sm:w-48"><option value="all">كل الحالات</option><option value="confirmed">الطلب اتأكد</option><option value="preparing">الطلب بيتجهز</option><option value="out_for_delivery">الطلب خرج للتوصيل</option><option value="delivered">الطلب اتسلم</option><option value="cancelled">الطلب اتلغى</option></select></div></div>
           <div class="bg-white brutal rounded-2xl p-3 sm:p-5"><div id="orders-table" class="table-wrap"><div class="p-6 font-bold">جاري تحميل الطلبات...</div></div></div>
         </section>
 
@@ -96,19 +96,33 @@
           </div>
         </section>
 
+        <section id="view-delivery" class="screen">
+          <div class="mb-6"><h1 class="text-3xl sm:text-4xl font-black">مناطق التوصيل</h1><p class="font-bold text-gray-600 mt-1">أضف المناطق وحدد رسوم كل منطقة. المناطق الموقوفة لن تظهر للعميل.</p></div>
+          <div class="grid grid-cols-1 2xl:grid-cols-3 gap-5 items-start">
+            <div class="2xl:col-span-1 bg-white brutal rounded-2xl p-4 sm:p-5"><div class="flex items-center justify-between gap-2 mb-4"><h2 id="delivery-area-form-title" class="text-xl font-black">إضافة منطقة توصيل</h2><button id="delivery-area-reset" type="button" class="text-sm font-black underline">تفريغ الحقول</button></div>
+              <form id="delivery-area-form" class="space-y-3">
+                <input type="hidden" name="id">
+                <label class="block font-black">اسم المنطقة<input class="field mt-1" name="name" required maxlength="100" placeholder="مثال: حي الجامعة"></label>
+                <label class="block font-black">رسوم التوصيل بالجنيه<input class="field mt-1" name="fee" required type="number" min="0" step="0.01" placeholder="25"></label>
+                <label class="block font-black">ترتيب العرض<input class="field mt-1" name="display_order" type="number" min="0" step="1" value="100"></label>
+                <p id="delivery-area-error" class="hidden bg-red-100 text-red-800 p-3 border-2 border-red-600 font-bold"></p>
+                <button id="delivery-area-save" class="btn w-full bg-[#FFD500] py-3" type="submit"><i class="fa-solid fa-plus ml-2"></i>حفظ المنطقة</button>
+              </form>
+            </div>
+            <div class="2xl:col-span-2 bg-white brutal rounded-2xl p-3 sm:p-5 min-w-0"><div class="flex justify-between items-center mb-4 gap-3"><h2 class="text-xl font-black">مناطق التوصيل والأسعار</h2><span id="delivery-areas-count" class="bg-gray-100 border border-black rounded-full px-3 py-1 font-black text-sm">0 منطقة</span></div><div id="delivery-areas-table" class="table-wrap"><div class="p-6 font-bold">جاري تحميل المناطق...</div></div></div>
+          </div>
+        </section>
+
         <section id="view-settings" class="screen">
-          <div class="mb-6"><div class="font-black text-sm text-gray-500">تخصيص المتجر</div><h1 class="text-3xl sm:text-4xl font-black">إعدادات الموقع</h1><p class="font-bold text-gray-600 mt-1">الإعدادات دي محفوظة في Supabase، ورسوم التوصيل تُحسب من قاعدة البيانات عند تسجيل الطلب.</p></div>
+          <div class="mb-6"><div class="font-black text-sm text-gray-500">تخصيص المتجر</div><h1 class="text-3xl sm:text-4xl font-black">إعدادات الموقع</h1><p class="font-bold text-gray-600 mt-1">عدّل بيانات المطعم والعبارة الرئيسية التي تظهر في الموقع.</p></div>
           <div class="max-w-3xl bg-white brutal rounded-2xl p-4 sm:p-6"><form id="settings-form" class="space-y-4">
             <label class="block font-black">اسم المطعم<input class="field mt-1" name="brand_name" required maxlength="120"></label>
             <label class="block font-black">رقم الخط الساخن<input class="field mt-1" name="hotline" maxlength="40" placeholder="رقم التواصل"></label>
-            <label class="block font-black">رسوم التوصيل بالجنيه<input class="field mt-1" name="delivery_fee" required type="number" min="0" step="0.01"></label>
             <label class="block font-black">عبارة الإعلان الرئيسية<input class="field mt-1" name="announcement" maxlength="240"></label>
             <p id="settings-error" class="hidden bg-red-100 text-red-800 p-3 border-2 border-red-600 font-bold"></p>
             <button id="settings-save" class="btn bg-[#FFD500] px-6 py-3" type="submit"><i class="fa-solid fa-floppy-disk ml-2"></i>حفظ الإعدادات</button>
           </form></div>
-          <div class="max-w-3xl mt-5 bg-[#FFF4B5] border-2 border-black rounded-xl p-4 font-bold leading-7"><i class="fa-solid fa-circle-info ml-1"></i>ملاحظة: رسوم التوصيل تُطبّق على الطلبات الجديدة فقط. تغييرها لا يعدّل إجمالي الطلبات المسجلة سابقاً.</div>
         </section>
-        <footer class="text-center text-xs text-gray-500 font-bold py-8">هوبا بيتزا · لوحة الإدارة · متصلة بقاعدة بيانات Supabase</footer>
       </main>
     </div>
   </div>
@@ -121,11 +135,11 @@
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
   const $ = selector => document.querySelector(selector);
   const $$ = selector => Array.from(document.querySelectorAll(selector));
-  const statusLabels = {confirmed:'الطلب اتأكد', preparing:'الطلب بيتجهز', out_for_delivery:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي'};
+  const statusLabels = {confirmed:'الطلب اتأكد', preparing:'الطلب بيتجهز', out_for_delivery:'الطلب خرج للتوصيل', delivered:'الطلب اتسلم', cancelled:'الطلب اتلغى'};
   const statusColors = {confirmed:'#FFF0A6', preparing:'#D9E8FF', out_for_delivery:'#FFE0BE', delivered:'#D8FBE5', cancelled:'#FFD9D9'};
   const money = value => `${new Intl.NumberFormat('ar-EG',{maximumFractionDigits:2}).format(Number(value||0))} ج.م`;
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  let orders = [], products = [], settings = null, activeView = 'overview', refreshTimer = null;
+  let orders = [], products = [], areas = [], settings = null, activeView = 'overview', refreshTimer = null;
 
   function toast(message, error=false) { const box=$('#toast'); box.textContent=message; box.style.background=error?'#FFD9D9':'#FFD500'; box.style.display='block'; clearTimeout(toast.timer); toast.timer=setTimeout(()=>box.style.display='none',3800); }
   function setError(id, message) { const el=$(id); if(!el) return; el.textContent=message; el.classList.remove('hidden'); }
@@ -136,7 +150,7 @@
   async function verifyAdmin(user) {
     const {data, error} = await db.rpc('is_admin');
     if(error) throw error;
-    if(data !== true) { await db.auth.signOut(); throw new Error('الحساب ده مش مضاف كمدير في جدول admin_users. راجع خطوات إعداد قاعدة البيانات.'); }
+    if(data !== true) { await db.auth.signOut(); throw new Error('الحساب ده غير مصرح له بدخول لوحة الإدارة.'); }
     showApp(user);
     await loadAll();
     startRefreshLoop();
@@ -168,26 +182,28 @@
     if(window.innerWidth < 1024) $('#sidebar').classList.add('hidden');
     if(view==='orders') renderOrders();
     if(view==='products') renderProducts();
+    if(view==='delivery') renderDeliveryAreas();
     if(view==='overview') renderOverview();
   }
 
   async function loadAll(showMessage=false) {
     try {
-      const [ordersResponse,productsResponse,settingsResponse] = await Promise.all([
+      const [ordersResponse,productsResponse,settingsResponse,areasResponse] = await Promise.all([
         db.from('orders').select('*, order_items(*)').order('created_at',{ascending:false}).limit(500),
         db.from('products').select('*').order('display_order',{ascending:true}).order('created_at',{ascending:false}),
-        db.from('site_settings').select('*').eq('id',true).maybeSingle()
+        db.from('site_settings').select('*').eq('id',true).maybeSingle(),
+        db.from('delivery_areas').select('*').order('display_order',{ascending:true}).order('name',{ascending:true})
       ]);
-      const failed=[ordersResponse,productsResponse,settingsResponse].find(result=>result.error);
+      const failed=[ordersResponse,productsResponse,settingsResponse,areasResponse].find(result=>result.error);
       if(failed?.error) throw failed.error;
-      orders=ordersResponse.data||[]; products=productsResponse.data||[]; settings=settingsResponse.data||null;
-      renderOverview(); renderOrders(); renderProducts(); fillSettings();
+      orders=ordersResponse.data||[]; products=productsResponse.data||[]; settings=settingsResponse.data||null; areas=areasResponse.data||[];
+      renderOverview(); renderOrders(); renderProducts(); renderDeliveryAreas(); fillSettings();
       $('#last-updated').textContent=`آخر تحديث: ${new Date().toLocaleTimeString('ar-EG')}`;
       if(showMessage) toast('تم تحديث بيانات لوحة التحكم');
     } catch(error) {
       console.error(error);
       if(showMessage) toast(error.message || 'تعذر تحديث البيانات',true);
-      else toast('تعذر تحميل البيانات؛ راجع صلاحيات Supabase وملف SQL.',true);
+      else toast('تعذر تحميل البيانات.',true);
     }
   }
   function startRefreshLoop(){ clearInterval(refreshTimer); refreshTimer=setInterval(()=>loadAll(false),20000); }
@@ -205,19 +221,30 @@
     $('#status-breakdown').innerHTML=statuses.map(status=>{const value=count(status);const pct=orders.length?Math.round(value/orders.length*100):0;return `<div><div class="flex justify-between gap-3 mb-1"><span class="font-black text-sm">${statusLabels[status]}</span><span class="font-black">${value}</span></div><div class="h-3 rounded-full bg-gray-100 border border-black overflow-hidden"><div style="width:${pct}%;background:${statusColors[status]}" class="h-full border-l border-black"></div></div></div>`}).join('');
   }
 
+  function allowedNextStatuses(status) {
+    const transitions = {
+      confirmed: ['preparing', 'cancelled'],
+      preparing: ['out_for_delivery', 'cancelled'],
+      out_for_delivery: ['delivered'],
+      delivered: [],
+      cancelled: []
+    };
+    return transitions[status] || [];
+  }
+
   function renderOrders() {
     const search=($('#orders-search')?.value||'').trim().toLowerCase();
     const selected=$('#orders-status-filter')?.value||'all';
-    const filtered=orders.filter(order=>(selected==='all'||order.status===selected) && [order.order_code,order.customer_name,order.phone,order.address].some(v=>String(v||'').toLowerCase().includes(search)));
+    const filtered=orders.filter(order=>(selected==='all'||order.status===selected) && [order.order_code,order.customer_name,order.phone,order.address,order.delivery_area_name].some(v=>String(v||'').toLowerCase().includes(search)));
     if(!filtered.length) { $('#orders-table').innerHTML='<div class="p-8 text-center font-bold text-gray-500">مفيش طلبات مطابقة للبحث الحالي.</div>'; return; }
     $('#orders-table').innerHTML=`<table><thead><tr><th>رقم الطلب / الوقت</th><th>بيانات العميل</th><th>العنوان والمحتوى</th><th>الإجمالي</th><th>الحالة والتحديث</th></tr></thead><tbody>${filtered.map(order=>{
       const items=Array.isArray(order.order_items)?order.order_items:[];
       const itemsHtml=items.map(item=>`${escapeHtml(item.product_name)} × ${Number(item.quantity)} — ${money(item.line_total)}`).join('<br>');
-      return `<tr><td><div class="font-black" dir="ltr">${escapeHtml(order.order_code)}</div><div class="text-xs text-gray-500 font-bold mt-1">${new Date(order.created_at).toLocaleString('ar-EG')}</div><div class="text-xs text-gray-500 font-bold mt-2">UID: ${escapeHtml(String(order.id).slice(0,8))}</div></td>
+      return `<tr><td><div class="font-black" dir="ltr">${escapeHtml(order.order_code)}</div><div class="text-xs text-gray-500 font-bold mt-1">${new Date(order.created_at).toLocaleString('ar-EG')}</div></td>
       <td><div class="font-black">${escapeHtml(order.customer_name)}</div><a href="tel:${escapeHtml(order.phone)}" dir="ltr" class="inline-block font-bold text-blue-700">${escapeHtml(order.phone)}</a></td>
-      <td class="min-w-[220px]"><div class="font-bold whitespace-normal">${escapeHtml(order.address)}</div>${order.notes?`<div class="text-xs font-bold text-gray-500 mt-1">ملاحظة: ${escapeHtml(order.notes)}</div>`:''}<div class="text-xs leading-6 mt-2 font-bold">${itemsHtml||'لا توجد تفاصيل'}</div></td>
-      <td><div class="font-black text-lg">${money(order.total)}</div><div class="text-xs text-gray-500 font-bold">المنتجات ${money(order.subtotal)}<br>توصيل ${money(order.delivery_fee)}</div></td>
-      <td><span class="status" style="background:${statusColors[order.status]||'#eee'}">${escapeHtml(statusLabels[order.status]||order.status)}</span><form class="status-update-form mt-3 space-y-2" data-order-id="${escapeHtml(order.id)}"><select class="field text-sm" name="status">${Object.entries(statusLabels).map(([value,label])=>`<option value="${value}" ${value===order.status?'selected':''}>${label}</option>`).join('')}</select><button class="btn w-full bg-[#FFD500] text-sm" type="submit"><i class="fa-solid fa-arrows-rotate ml-1"></i>تحديث الحالة</button></form></td></tr>`;
+      <td class="min-w-[220px]"><div class="font-bold whitespace-normal">${escapeHtml(order.address)}</div>${order.delivery_area_name?`<div class="text-sm font-black text-blue-700 mt-1">المنطقة: ${escapeHtml(order.delivery_area_name)}</div>`:''}${order.notes?`<div class="text-xs font-bold text-gray-500 mt-1">ملاحظة: ${escapeHtml(order.notes)}</div>`:''}<div class="text-xs leading-6 mt-2 font-bold">${itemsHtml||'لا توجد تفاصيل'}</div></td>
+      <td><div class="font-black text-lg">${money(order.total)}</div><div class="text-xs text-gray-500 font-bold">المنتجات ${money(order.subtotal)}<br>التوصيل ${money(order.delivery_fee)}</div></td>
+      <td><span class="status" style="background:${statusColors[order.status]||'#eee'}">${escapeHtml(statusLabels[order.status]||order.status)}</span>${allowedNextStatuses(order.status).length?`<form class="status-update-form mt-3 space-y-2" data-order-id="${escapeHtml(order.id)}"><select class="field text-sm" name="status">${[order.status,...allowedNextStatuses(order.status)].map(value=>`<option value="${value}" ${value===order.status?'selected':''}>${statusLabels[value]}</option>`).join('')}</select><button class="btn w-full bg-[#FFD500] text-sm" type="submit"><i class="fa-solid fa-arrows-rotate ml-1"></i>تحديث الحالة</button></form>`:`<div class="mt-3 text-xs font-black text-gray-500">حالة نهائية</div>`}</td></tr>`;
     }).join('')}</tbody></table>`;
     $$('.status-update-form').forEach(form=>form.addEventListener('submit',updateOrderStatus));
   }
@@ -225,7 +252,11 @@
   $('#orders-status-filter').addEventListener('change',renderOrders);
 
   async function updateOrderStatus(event) {
-    event.preventDefault();const form=event.currentTarget;const id=form.dataset.orderId;const status=new FormData(form).get('status');const button=form.querySelector('button');button.disabled=true;button.textContent='جاري الحفظ...';
+    event.preventDefault();const form=event.currentTarget;const id=form.dataset.orderId;const status=new FormData(form).get('status');const button=form.querySelector('button');
+    const order=orders.find(row=>row.id===id);
+    if(!order || status===order.status || !allowedNextStatuses(order.status).includes(status)){toast('اختار الحالة التالية المسموح بها.',true);return;}
+    if(status==='cancelled' && !window.confirm('تأكيد إلغاء الطلب؟ لا يمكن التراجع عن الإلغاء.'))return;
+    button.disabled=true;button.textContent='جاري الحفظ...';
     try {
       const {error}=await db.from('orders').update({status}).eq('id',id);
       if(error) throw error;
@@ -256,8 +287,42 @@
   });
   async function toggleProduct(id){const product=products.find(row=>row.id===id);if(!product)return;try{const {error}=await db.from('products').update({is_active:!product.is_active,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await loadAll(false);toast(product.is_active?'تم إخفاء المنتج من الموقع':'تم إظهار المنتج بالموقع');}catch(error){toast(error.message||'تعذر تحديث ظهور المنتج',true);}}
 
-  function fillSettings(){if(!settings)return;const form=$('#settings-form');for(const key of ['brand_name','hotline','delivery_fee','announcement'])form.elements[key].value=settings[key]??'';}
-  $('#settings-form').addEventListener('submit',async event=>{event.preventDefault();clearError('#settings-error');const fd=new FormData(event.currentTarget);const payload={brand_name:String(fd.get('brand_name')).trim(),hotline:String(fd.get('hotline')||'').trim(),delivery_fee:Number(fd.get('delivery_fee')),announcement:String(fd.get('announcement')||'').trim(),updated_at:new Date().toISOString()};if(!Number.isFinite(payload.delivery_fee)||payload.delivery_fee<0){setError('#settings-error','رسوم التوصيل يجب ألا تكون سالبة.');return;}const button=$('#settings-save');button.disabled=true;button.textContent='جاري الحفظ...';try{const {error}=await db.from('site_settings').update(payload).eq('id',true);if(error)throw error;await loadAll(false);toast('تم حفظ الإعدادات بنجاح');}catch(error){console.error(error);setError('#settings-error',error.message||'تعذر حفظ الإعدادات');}finally{button.disabled=false;button.innerHTML='<i class="fa-solid fa-floppy-disk ml-2"></i>حفظ الإعدادات';}});
+  function resetDeliveryAreaForm(){
+    const form=$('#delivery-area-form');form.reset();form.elements.id.value='';form.elements.display_order.value='100';
+    $('#delivery-area-form-title').textContent='إضافة منطقة توصيل';$('#delivery-area-save').innerHTML='<i class="fa-solid fa-plus ml-2"></i>حفظ المنطقة';clearError('#delivery-area-error');
+  }
+  function editDeliveryArea(id){
+    const area=areas.find(row=>row.id===id);if(!area)return;const form=$('#delivery-area-form');
+    for(const key of ['id','name','fee','display_order'])form.elements[key].value=area[key]??'';
+    $('#delivery-area-form-title').textContent='تعديل منطقة التوصيل';$('#delivery-area-save').innerHTML='<i class="fa-solid fa-floppy-disk ml-2"></i>حفظ التعديلات';clearError('#delivery-area-error');form.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function renderDeliveryAreas(){
+    $('#delivery-areas-count').textContent=`${areas.length} منطقة`;
+    if(!areas.length){$('#delivery-areas-table').innerHTML='<div class="p-6 text-center font-bold text-gray-500">لا توجد مناطق توصيل. أضف أول منطقة من النموذج.</div>';return;}
+    $('#delivery-areas-table').innerHTML=`<table><thead><tr><th>المنطقة</th><th>رسوم التوصيل</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>${areas.map(area=>`<tr><td><div class="font-black">${escapeHtml(area.name)}</div><div class="text-xs text-gray-500 font-bold mt-1">ترتيب العرض: ${Number(area.display_order||0)}</div></td><td><b class="text-lg">${money(area.fee)}</b></td><td><span class="status" style="background:${area.is_active?'#D8FBE5':'#eee'}">${area.is_active?'متاحة للطلب':'موقوفة'}</span></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn bg-[#FFD500] text-sm" data-edit-area="${escapeHtml(area.id)}"><i class="fa-solid fa-pen ml-1"></i>تعديل</button><button type="button" class="btn bg-white text-sm" data-toggle-area="${escapeHtml(area.id)}">${area.is_active?'إيقاف':'تفعيل'}</button></div></td></tr>`).join('')}</tbody></table>`;
+    $$('[data-edit-area]').forEach(button=>button.addEventListener('click',()=>editDeliveryArea(button.dataset.editArea)));
+    $$('[data-toggle-area]').forEach(button=>button.addEventListener('click',()=>toggleDeliveryArea(button.dataset.toggleArea)));
+  }
+  $('#delivery-area-reset').addEventListener('click',resetDeliveryAreaForm);
+  $('#delivery-area-form').addEventListener('submit',async event=>{
+    event.preventDefault();clearError('#delivery-area-error');const form=event.currentTarget;const fd=new FormData(form);const id=String(fd.get('id')||'');
+    const payload={name:String(fd.get('name')||'').trim(),fee:Number(fd.get('fee')),display_order:Number(fd.get('display_order')||100),updated_at:new Date().toISOString()};
+    if(payload.name.length<2||!Number.isFinite(payload.fee)||payload.fee<0||!Number.isFinite(payload.display_order)||payload.display_order<0){setError('#delivery-area-error','راجع اسم المنطقة ورسوم التوصيل وترتيب العرض.');return;}
+    const button=$('#delivery-area-save');button.disabled=true;button.textContent='جاري الحفظ...';
+    try{const result=id?await db.from('delivery_areas').update(payload).eq('id',id):await db.from('delivery_areas').insert({...payload,is_active:true});if(result.error)throw result.error;resetDeliveryAreaForm();await loadAll(false);toast(id?'تم تعديل منطقة التوصيل':'تمت إضافة منطقة التوصيل');}
+    catch(error){console.error(error);const msg=String(error.message||'تعذر حفظ المنطقة.');setError('#delivery-area-error',msg.includes('delivery_areas_name_lower_uidx')?'اسم المنطقة موجود بالفعل. اختر اسمًا آخر.':msg);}
+    finally{button.disabled=false;button.innerHTML=$('#delivery-area-form').elements.id.value?'<i class="fa-solid fa-floppy-disk ml-2"></i>حفظ التعديلات':'<i class="fa-solid fa-plus ml-2"></i>حفظ المنطقة';}
+  });
+  async function toggleDeliveryArea(id){
+    const area=areas.find(row=>row.id===id);if(!area)return;
+    const next=!area.is_active;
+    if(!next && !window.confirm(`إيقاف منطقة «${area.name}»؟ لن تظهر في طلبات العملاء الجديدة.`))return;
+    try{const {error}=await db.from('delivery_areas').update({is_active:next,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await loadAll(false);toast(next?'تم تفعيل المنطقة':'تم إيقاف المنطقة');}
+    catch(error){toast(error.message||'تعذر تحديث المنطقة',true);}
+  }
+
+  function fillSettings(){if(!settings)return;const form=$('#settings-form');for(const key of ['brand_name','hotline','announcement'])form.elements[key].value=settings[key]??'';}
+  $('#settings-form').addEventListener('submit',async event=>{event.preventDefault();clearError('#settings-error');const fd=new FormData(event.currentTarget);const payload={brand_name:String(fd.get('brand_name')).trim(),hotline:String(fd.get('hotline')||'').trim(),announcement:String(fd.get('announcement')||'').trim(),updated_at:new Date().toISOString()};const button=$('#settings-save');button.disabled=true;button.textContent='جاري الحفظ...';try{const {error}=await db.from('site_settings').update(payload).eq('id',true);if(error)throw error;await loadAll(false);toast('تم حفظ الإعدادات بنجاح');}catch(error){console.error(error);setError('#settings-error',error.message||'تعذر حفظ الإعدادات');}finally{button.disabled=false;button.innerHTML='<i class="fa-solid fa-floppy-disk ml-2"></i>حفظ الإعدادات';}});
 
   async function boot(){
     const {data,error}=await db.auth.getSession();

@@ -607,13 +607,14 @@
             <div id="cart-lines" class="space-y-3 mb-5"></div>
             <div class="border-t-4 border-dashed border-brand-dark pt-4 mb-6 space-y-2 font-black">
                 <div class="flex justify-between"><span>قيمة المنتجات</span><span id="cart-subtotal">0 ج.م</span></div>
-                <div class="flex justify-between text-gray-600"><span>التوصيل</span><span id="cart-delivery">25 ج.م</span></div>
+                <div class="flex justify-between text-gray-600"><span>التوصيل</span><span id="cart-delivery">اختار المنطقة</span></div>
                 <div class="flex justify-between text-2xl"><span>الإجمالي</span><span id="cart-total" class="text-brand-red">0 ج.م</span></div>
             </div>
             <form id="checkout-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label class="font-black">الاسم بالكامل<input name="customer_name" required maxlength="120" autocomplete="name" class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow" placeholder="اسمك إيه يا معلم؟"></label>
                 <label class="font-black">رقم الموبايل<input name="phone" required maxlength="30" inputmode="tel" autocomplete="tel" class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow" placeholder="01xxxxxxxxx"></label>
-                <label class="font-black sm:col-span-2">عنوان التوصيل بالتفصيل<textarea name="address" required maxlength="500" autocomplete="street-address" rows="2" class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow" placeholder="المنطقة، الشارع، رقم العمارة، الدور..."></textarea></label>
+                <label class="font-black sm:col-span-2">منطقة التوصيل<select id="delivery-area-select" name="delivery_area_id" required class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow"><option value="">جاري تحميل مناطق التوصيل...</option></select><span class="block text-xs text-gray-500 mt-1">رسوم التوصيل بتختلف حسب المنطقة.</span></label>
+                <label class="font-black sm:col-span-2">عنوان التوصيل بالتفصيل<textarea name="address" required maxlength="500" autocomplete="street-address" rows="2" class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow" placeholder="الشارع، رقم العمارة، الدور، وأقرب علامة..."></textarea></label>
                 <label class="font-black sm:col-span-2">ملاحظات للأوردر (اختياري)<textarea name="notes" maxlength="500" rows="2" class="mt-1 w-full border-brutal bg-white p-3 outline-none focus:ring-2 focus:ring-brand-yellow" placeholder="من غير شطة؟ تفاصيل إضافية؟"></textarea></label>
                 <p id="checkout-error" class="hidden sm:col-span-2 bg-red-100 border-2 border-red-700 p-3 font-bold text-red-800" role="alert"></p>
                 <button id="checkout-submit" type="submit" class="sm:col-span-2 bg-brand-red text-white border-brutal shadow-brutal py-4 px-6 text-xl font-black hover:bg-brand-dark btn-brutal"><i class="fa-solid fa-check ml-2"></i>تأكيد الأوردر</button>
@@ -795,7 +796,8 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
         window.storeProducts = [];
         window.cartItems = new Map();
-        let deliveryFee = 25;
+        let deliveryAreas = [];
+        let deliveryFee = 0;
         let trackingPoll = null;
 
         const SEED_PRODUCT_IDS = {
@@ -844,9 +846,10 @@
 
         async function loadStoreData() {
             try {
-                const [{ data: products, error: productError }, { data: settings, error: settingsError }] = await Promise.all([
+                const [{ data: products, error: productError }, { data: settings, error: settingsError }, { data: areas, error: areasError }] = await Promise.all([
                     supabaseClient.from('products').select('id,name,description,price,compare_price,image_url,category,badge,is_active,display_order').eq('is_active', true).order('display_order', { ascending: true }),
-                    supabaseClient.from('site_settings').select('delivery_fee,hotline,brand_name').eq('id', true).maybeSingle()
+                    supabaseClient.from('site_settings').select('hotline,brand_name,announcement').eq('id', true).maybeSingle(),
+                    supabaseClient.from('delivery_areas').select('id,name,fee,display_order').eq('is_active', true).order('display_order', { ascending: true }).order('name', { ascending: true })
                 ]);
                 if (!productError && Array.isArray(products) && products.length) {
                     window.storeProducts = products;
@@ -856,8 +859,27 @@
                         document.querySelectorAll('#menu-grid .reveal').forEach(el => el.classList.add('active'));
                     }
                 }
+                if (!areasError && Array.isArray(areas)) {
+                    deliveryAreas = areas;
+                    const areaSelect = document.getElementById('delivery-area-select');
+                    const previousValue = areaSelect?.value || '';
+                    if (areaSelect) {
+                        areaSelect.innerHTML = areas.length
+                            ? '<option value="">اختار منطقة التوصيل</option>' + areas.map(area => `<option value="${escapeHtml(area.id)}">${escapeHtml(area.name)} — ${money(area.fee)}</option>`).join('')
+                            : '<option value="">التوصيل غير متاح حاليًا</option>';
+                        if (areas.some(area => area.id === previousValue)) areaSelect.value = previousValue;
+                        areaSelect.disabled = areas.length === 0;
+                    }
+                    deliveryFee = Number(areas.find(area => area.id === areaSelect?.value)?.fee || 0);
+                    renderCart();
+                } else {
+                    deliveryAreas = [];
+                    const areaSelect = document.getElementById('delivery-area-select');
+                    if (areaSelect) { areaSelect.innerHTML = '<option value="">التوصيل غير متاح حاليًا</option>'; areaSelect.disabled = true; }
+                    deliveryFee = 0;
+                    renderCart();
+                }
                 if (!settingsError && settings) {
-                    deliveryFee = Number(settings.delivery_fee ?? 25);
                     if (settings.brand_name) document.querySelectorAll('[data-brand-name]').forEach(el => el.textContent = settings.brand_name);
                     if (settings.hotline) {
                         document.querySelectorAll('[data-hotline-text]').forEach(el => el.textContent = settings.hotline);
@@ -870,7 +892,7 @@
                     });
                 }
             } catch (error) {
-                console.warn('Supabase catalog/settings could not be loaded; the original hard-coded menu remains visible.', error);
+                console.warn('تعذر تحميل بيانات المتجر.', error);
             }
         }
 
@@ -895,12 +917,18 @@
                 <div class="flex items-center gap-2"><button type="button" data-cart-change="-1" data-cart-id="${escapeHtml(item.id)}" class="w-8 h-8 border-2 border-black bg-brand-yellow font-black">−</button><span class="font-black min-w-5 text-center">${item.qty}</span><button type="button" data-cart-change="1" data-cart-id="${escapeHtml(item.id)}" class="w-8 h-8 border-2 border-black bg-brand-green font-black">+</button></div>
                 <div class="font-black text-brand-red text-left min-w-[75px]">${money(item.price * item.qty)}</div></div>`).join('');
             const subtotal = items.reduce((sum, item) => sum + Number(item.price) * item.qty, 0);
-            const fee = subtotal > 0 ? deliveryFee : 0;
+            const selectedAreaId = document.getElementById('delivery-area-select')?.value || '';
+            const selectedArea = deliveryAreas.find(area => area.id === selectedAreaId);
+            deliveryFee = selectedArea ? Number(selectedArea.fee || 0) : 0;
+            const fee = subtotal > 0 && selectedArea ? deliveryFee : 0;
             document.getElementById('cart-subtotal').textContent = money(subtotal);
-            document.getElementById('cart-delivery').textContent = money(fee);
+            document.getElementById('cart-delivery').textContent = selectedArea ? money(fee) : 'اختار المنطقة';
             document.getElementById('cart-total').textContent = money(subtotal + fee);
-            document.getElementById('checkout-submit').disabled = false;
-            document.getElementById('checkout-submit').classList.remove('opacity-50', 'cursor-not-allowed');
+            const submit = document.getElementById('checkout-submit');
+            const canSubmit = items.length > 0 && Boolean(selectedArea) && items.every(item => /^[0-9a-f-]{36}$/i.test(item.id));
+            submit.disabled = !canSubmit;
+            submit.classList.toggle('opacity-50', !canSubmit);
+            submit.classList.toggle('cursor-not-allowed', !canSubmit);
         }
 
         document.getElementById('menu-grid')?.addEventListener('click', event => {
@@ -910,6 +938,7 @@
             if (product) window.addToCart(product.name, product.id, Number(product.price));
         });
         document.getElementById('cart-btn')?.addEventListener('click', openCart);
+        document.getElementById('delivery-area-select')?.addEventListener('change', renderCart);
         document.getElementById('track-order-open')?.addEventListener('click', () => { setModal('tracking-modal', true); });
         document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => setModal(button.dataset.close, false)));
         ['order-modal', 'tracking-modal'].forEach(id => document.getElementById(id).addEventListener('click', event => { if (event.target.id === id) setModal(id, false); }));
@@ -936,8 +965,10 @@
             const submit = document.getElementById('checkout-submit');
             const form = new FormData(checkoutForm);
             const items = Array.from(window.cartItems.values());
+            const selectedAreaId = String(form.get('delivery_area_id') || '');
             if (!items.length) { showInlineError('checkout-error', 'السلة فاضية. ضيف المنتجات الأول.'); return; }
-            if (items.some(item => !/^[0-9a-f-]{36}$/i.test(item.id))) { showInlineError('checkout-error', 'تعذر تحديد منتج من قاعدة البيانات. حدّث الصفحة بعد تجهيز قاعدة البيانات وتشغيل ملف SQL.'); return; }
+            if (!deliveryAreas.some(area => area.id === selectedAreaId)) { showInlineError('checkout-error', 'اختار منطقة التوصيل من القائمة.'); return; }
+            if (items.some(item => !/^[0-9a-f-]{36}$/i.test(item.id))) { showInlineError('checkout-error', 'تعذر إضافة الطلب حاليًا. حدّث الصفحة وحاول مرة أخرى.'); return; }
             submit.disabled = true;
             submit.textContent = 'جاري تسجيل الطلب...';
             try {
@@ -946,6 +977,7 @@
                     p_phone: String(form.get('phone') || '').trim(),
                     p_address: String(form.get('address') || '').trim(),
                     p_notes: String(form.get('notes') || '').trim(),
+                    p_delivery_area_id: selectedAreaId,
                     p_items: items.map(item => ({ product_id: item.id, quantity: item.qty }))
                 });
                 if (error) throw error;
@@ -964,14 +996,24 @@
                 renderCart();
             } catch (error) {
                 console.error('Order submission failed:', error);
-                showInlineError('checkout-error', error.message || 'حصلت مشكلة أثناء تسجيل الطلب. تأكد من إعداد قاعدة البيانات وحاول مرة أخرى.');
+                const serverMessage = String(error?.message || '');
+                const allowedMessages = [
+                    'اكتب الاسم بشكل صحيح', 'رقم الموبايل غير صحيح', 'اكتب عنوان توصيل واضح',
+                    'الملاحظات طويلة أكثر من اللازم', 'اختار منطقة التوصيل',
+                    'منطقة التوصيل المختارة غير متاحة. اختار منطقة أخرى.',
+                    'صيغة السلة غير صحيحة', 'السلة فارغة أو عدد عناصرها غير صحيح',
+                    'كمية المنتج غير صحيحة', 'كمية المنتج يجب أن تكون من 1 إلى 20',
+                    'معرّف المنتج غير صحيح', 'أحد المنتجات لم يعد متاحاً'
+                ];
+                const friendlyMessage = allowedMessages.find(message => serverMessage.includes(message));
+                showInlineError('checkout-error', friendlyMessage || 'حصلت مشكلة أثناء تسجيل الطلب. حاول مرة أخرى أو اتصل بنا.');
             } finally {
                 submit.disabled = false;
                 submit.innerHTML = '<i class="fa-solid fa-check ml-2"></i>تأكيد الأوردر';
             }
         });
 
-        const statusLabels = { confirmed: 'الطلب اتأكد', preparing: 'الطلب بيتجهز', out_for_delivery: 'خرج للتوصيل', delivered: 'تم التسليم', cancelled: 'تم إلغاء الطلب' };
+        const statusLabels = { confirmed: 'الطلب اتأكد', preparing: 'الطلب بيتجهز', out_for_delivery: 'الطلب خرج للتوصيل', delivered: 'الطلب اتسلم', cancelled: 'الطلب اتلغى' };
         const statusOrder = ['confirmed', 'preparing', 'out_for_delivery', 'delivered'];
         async function trackOrder(showErrors = true) {
             const form = document.getElementById('tracking-form');
@@ -998,7 +1040,9 @@
                 const history = Array.isArray(order.history) ? order.history : [];
                 result.innerHTML = `<div class="bg-white border-brutal shadow-brutal p-4 sm:p-5">
                     <div class="flex flex-wrap justify-between gap-3"><div><div class="text-xs font-black text-gray-500">رقم الطلب</div><div class="text-xl sm:text-2xl font-black" dir="ltr">${escapeHtml(order.order_code)}</div></div><div class="text-left"><div class="text-xs font-black text-gray-500">الإجمالي</div><div class="text-xl sm:text-2xl font-black text-brand-red">${money(order.total)}</div></div></div>
-                    <div class="mt-4 bg-brand-yellow/60 border-2 border-black p-3 font-black">الحالة الحالية: ${escapeHtml(statusLabels[order.status] || order.status)}</div>${progress}
+                    <div class="mt-4 bg-brand-yellow/60 border-2 border-black p-3 font-black">الحالة الحالية: ${escapeHtml(statusLabels[order.status] || order.status)}</div>
+                    ${order.delivery_area_name ? `<div class="mt-3 font-bold text-gray-700">منطقة التوصيل: ${escapeHtml(order.delivery_area_name)}</div>` : ''}${progress}
+                    <div class="flex justify-between gap-3 text-sm font-bold text-gray-600 mt-4"><span>المنتجات</span><span>${money(order.subtotal)}</span></div><div class="flex justify-between gap-3 text-sm font-bold text-gray-600 mt-1"><span>التوصيل</span><span>${money(order.delivery_fee)}</span></div>
                     <h3 class="font-black text-lg mt-5 mb-2">تفاصيل الطلب</h3><div class="space-y-2">${items.map(item => `<div class="flex justify-between gap-3 border-b border-dashed border-gray-300 pb-2 text-sm font-bold"><span>${escapeHtml(item.product_name)} × ${Number(item.quantity)}</span><span>${money(item.line_total)}</span></div>`).join('')}</div>
                     ${history.length ? `<h3 class="font-black text-lg mt-5 mb-2">تحديثات حالة الطلب</h3><div class="space-y-3">${history.map(item => `<div class="flex gap-3 items-start"><div class="w-3 h-3 rounded-full bg-brand-red border border-black mt-1.5 shrink-0"></div><div><div class="font-black">${escapeHtml(statusLabels[item.status] || item.status)}</div><div class="text-xs text-gray-500 font-bold">${item.created_at ? new Date(item.created_at).toLocaleString('ar-EG') : ''}</div>${item.note ? `<div class="text-sm font-bold">${escapeHtml(item.note)}</div>` : ''}</div></div>`).join('')}</div>` : ''}
                     <button type="button" id="refresh-tracking" class="mt-5 border-brutal bg-white px-4 py-2 font-black hover:bg-brand-yellow"><i class="fa-solid fa-rotate ml-2"></i>تحديث الحالة</button>
@@ -1006,7 +1050,7 @@
                 document.getElementById('refresh-tracking')?.addEventListener('click', () => trackOrder(true));
             } catch (error) {
                 console.error('Tracking failed:', error);
-                if (showErrors) result.innerHTML = '<div class="border-brutal bg-red-100 text-red-800 p-4 font-black">تعذر جلب حالة الطلب. تأكد من تشغيل ملف إعداد Supabase SQL ثم حاول مرة أخرى.</div>';
+                if (showErrors) result.innerHTML = '<div class="border-brutal bg-red-100 text-red-800 p-4 font-black">تعذر عرض حالة الطلب حاليًا. حاول مرة أخرى.</div>';
             }
         }
         document.getElementById('tracking-form')?.addEventListener('submit', event => { event.preventDefault(); trackOrder(true); });
