@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>هوبا بيتزا | في حتة تانية</title>
+    
+    <!-- Google Fonts: Cairo for bold Arabic typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FFD500',
+                            red: '#FF3A3A',
+                            blue: '#4A90E2',
+                            green: '#00E676',
+                            pink: '#FF61A6',
+                            light: '#FFFDF9',
+                            dark: '#111111'
+                        }
+                    },
+                    boxShadow: {
+                        'brutal': '4px 4px 0px 0px rgba(17,17,17,1)', /* Adjusted for mobile default */
+                        'brutal-md': '6px 6px 0px 0px rgba(17,17,17,1)', /* Desktop */
+                        'brutal-lg': '8px 8px 0px 0px rgba(17,17,17,1)',
+                        'brutal-hover': '2px 2px 0px 0px rgba(17,17,17,1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Responsive Typography Clamp */
+        :root {
+            --fluid-h1: clamp(3rem, 8vw, 8rem);
+            --fluid-h2: clamp(2.5rem, 6vw, 5rem);
+            --fluid-p: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #FFFDF9;
+            color: #111111;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background-image: radial-gradient(#111111 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-attachment: fixed;
+        }
+
+        /* Film Grain Overlay for Professional Street Vibe */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999999;
+            opacity: 0.8;
+        }
+
+        /* Brutalist borders */
+        .border-brutal {
+            border: 3px solid #111111;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FFFDF9; border-left: 2px solid #111; }
+        ::-webkit-scrollbar-thumb { background: #FF3A3A; border: 2px solid #111; }
+
+        /* Preloader */
+        #preloader {
+            position: fixed; inset: 0; background: #FFD500; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .loader-hide { transform: translateY(-100%); }
+        
+        .pizza-spin { animation: bounceSpin 2s infinite ease-in-out; }
+        @keyframes bounceSpin {
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(180deg) scale(1.2); }
+            100% { transform: translateY(0) rotate(360deg) scale(1); }
+        }
+
+        /* Infinite Marquee */
+        .marquee-wrapper {
+            overflow: hidden; white-space: nowrap; display: flex; width: 100vw;
+            border-top: 4px solid #111; border-bottom: 4px solid #111;
+        }
+        .marquee-content { display: inline-flex; animation: marquee 15s linear infinite; }
+        .marquee-content.reverse { animation: marquee-reverse 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+        @keyframes marquee-reverse { 0% { transform: translateX(50%); } 100% { transform: translateX(0); } }
+
+        /* Floating elements */
+        .float-slow { animation: floating 6s ease-in-out infinite; }
+        .float-fast { animation: floating 3s ease-in-out infinite reverse; }
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(-5deg); }
+        }
+
+        /* Scroll Reveal Classes */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.9); transition: all 0.6s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal-scale.active { opacity: 1; transform: scale(1); }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px;
+        }
+        @media (min-width: 768px) {
+            #toast-container { left: 20px; transform: none; width: auto; }
+        }
+        .toast {
+            background: #FFD500; color: #111; padding: 15px 20px; border: 3px solid #111;
+            box-shadow: 4px 4px 0px 0px #111; font-weight: 800; font-size: 1rem;
+            display: flex; align-items: center; gap: 10px;
+            transform: translateY(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @media (min-width: 768px) {
+            .toast { transform: translateX(-150%); font-size: 1.1rem; }
+        }
+        .toast.show { transform: translate(0); opacity: 1; }
+
+        /* Button Hover Effects */
+        .btn-brutal { transition: all 0.2s ease; }
+        .btn-brutal:active { box-shadow: 0px 0px 0px 0px rgba(17,17,17,1) !important; transform: translate(4px, 4px); }
+        
+        .card-hover:hover { transform: translate(-4px, -4px) rotate(-1deg); box-shadow: 8px 8px 0px 0px rgba(17,17,17,1); }
+        @media (min-width: 768px) {
+            .card-hover:hover { box-shadow: 10px 10px 0px 0px rgba(17,17,17,1); }
+        }
+
+        /* Typography utility for massive titles */
+        .fluid-h1 { font-size: var(--fluid-h1); line-height: 1; }
+        .fluid-h2 { font-size: var(--fluid-h2); line-height: 1.1; }
+        .fluid-p { font-size: var(--fluid-p); }
+        
+        /* Mobile Menu Animation */
+        #mobile-menu {
+            clip-path: circle(0px at top right);
+            transition: clip-path 0.5s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+        #mobile-menu.open {
+            clip-path: circle(150% at top right);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-red selection:text-white relative">
+
+    <div id="preloader">
+        <div class="relative">
+            <img src="https://freepngimg.com/thumb/pizza/34-pizza-png-image.png" alt="Loading" class="w-32 h-32 md:w-40 md:h-40 pizza-spin drop-shadow-2xl z-10 relative">
+            <div class="absolute inset-0 bg-brand-red w-full h-full rounded-full blur-3xl opacity-30 animate-pulse"></div>
+        </div>
+        <h1 class="mt-8 text-4xl md:text-5xl font-black text-brand-dark tracking-tighter text-center px-4" style="text-shadow: 3px 3px 0px white;">
+            للجامدين فقط...
+        </h1>
+        <p class="mt-2 text-lg md:text-xl font-bold">بنجهزلك العظمة 🚀</p>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+        <div class="bg-brand-light border-b-4 border-brand-dark transition-all" id="nav-container">
+            <div class="container mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+                
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 md:gap-3 group z-50 relative">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-brand-red border-brutal flex items-center justify-center rounded-full group-hover:rotate-12 transition-transform shadow-brutal">
+                        <i class="fa-solid fa-pizza-slice text-white text-lg md:text-2xl"></i>
+                    </div>
+                    <span class="text-2xl md:text-3xl font-black tracking-tighter text-brand-dark uppercase mt-1" style="text-shadow: 2px 2px 0px #FFD500;">هوبا بيتزا</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <ul class="hidden lg:flex items-center gap-2 font-black text-lg">
+                    <li><a href="#hero" class="px-4 py-2 hover:bg-brand-yellow border-2 border-transparent hover:border-brand-dark rounded-xl transition-all">الرئيسية</a></li>
+                    <li><a href="#about" class="px-4 py-2 hover:bg-brand-pink border-2 border-transparent hover:border-brand-dark rounded-xl transition-all">عن الجمدان</a></li>
+                    <li><a href="#menu" class="px-4 py-2 hover:bg-brand-green border-2 border-transparent hover:border-brand-dark rounded-xl transition-all">المنيو</a></li>
+                    <li><a href="#branches" class="px-4 py-2 hover:bg-brand-blue border-2 border-transparent hover:border-brand-dark rounded-xl transition-all">فروعنا</a></li>
+                </ul>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3 md:gap-4 z-50 relative">
+                    <button class="hidden md:flex items-center gap-2 bg-white border-brutal shadow-brutal px-5 py-2 font-black text-brand-dark hover:bg-brand-yellow btn-brutal">
+                        <i class="fa-solid fa-phone"></i> 19XXX
+                    </button>
+                    
+                    <button id="cart-btn" class="relative bg-brand-yellow border-brutal shadow-brutal w-10 h-10 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:bg-brand-red hover:text-white transition-colors btn-brutal">
+                        <i class="fa-solid fa-cart-shopping text-lg md:text-2xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 md:-top-3 md:-right-3 bg-brand-dark text-white text-xs md:text-sm font-black w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full border-2 border-white animate-bounce">0</span>
+                    </button>
+
+                    <!-- Mobile Toggle -->
+                    <button id="mobile-menu-btn" class="lg:hidden text-xl text-brand-dark bg-white border-brutal w-10 h-10 flex flex-col justify-center items-center gap-1 shadow-brutal active:translate-y-1 active:translate-x-1 active:shadow-none transition-all">
+                        <span class="block w-5 h-[3px] bg-brand-dark transition-all duration-300"></span>
+                        <span class="block w-5 h-[3px] bg-brand-dark transition-all duration-300"></span>
+                        <span class="block w-5 h-[3px] bg-brand-dark transition-all duration-300"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-brand-yellow z-40 flex flex-col justify-center items-center px-4 pt-16">
+        <div class="flex flex-col gap-6 text-center font-black text-4xl w-full">
+            <a href="#hero" class="mobile-link text-brand-dark hover:text-white transition-colors p-2 border-b-4 border-brand-dark/10">الرئيسية</a>
+            <a href="#about" class="mobile-link text-brand-dark hover:text-white transition-colors p-2 border-b-4 border-brand-dark/10">عن الجمدان</a>
+            <a href="#menu" class="mobile-link text-brand-dark hover:text-white transition-colors p-2 border-b-4 border-brand-dark/10">المنيو</a>
+            <a href="#branches" class="mobile-link text-brand-dark hover:text-white transition-colors p-2 border-b-4 border-brand-dark/10">فروعنا</a>
+        </div>
+        <div class="mt-12 w-full max-w-sm">
+            <a href="tel:19XXX" class="w-full bg-white text-brand-dark border-brutal shadow-brutal py-4 text-2xl font-black flex justify-center items-center gap-3 hover:bg-brand-red hover:text-white transition-colors">
+                <i class="fa-solid fa-phone"></i> كلمنا: 19XXX
+            </a>
+        </div>
+    </div>
+
+    <section id="hero" class="relative min-h-[100vh] flex items-center justify-center pt-28 pb-16 overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute top-20 right-5 md:right-10 w-40 h-40 md:w-64 md:h-64 bg-brand-pink rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
+        <div class="absolute bottom-20 left-5 md:left-10 w-48 h-48 md:w-72 md:h-72 bg-brand-yellow rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
+
+        <div class="container mx-auto px-4 md:px-8 relative z-10 grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+            
+            <!-- Hero Text -->
+            <div class="text-center lg:text-right space-y-4 md:space-y-6 reveal relative z-20 order-2 lg:order-1 mt-8 lg:mt-0">
+                <!-- Fun Badge -->
+                <div class="inline-flex items-center justify-center gap-2 md:gap-3 bg-white border-brutal md:shadow-brutal-md px-3 py-1 md:px-4 md:py-2 font-black text-sm md:text-base transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
+                    <span class="w-2 h-2 md:w-3 md:h-3 bg-brand-red rounded-full animate-ping"></span>
+                    في حتة تانية خالص!
+                </div>
+                
+                <h1 class="fluid-h1 font-black text-brand-dark">
+                    علاقة <br class="hidden lg:block">
+                    <span class="relative inline-block mt-2 md:mt-0">
+                        <span class="relative z-10 bg-brand-yellow px-1 md:px-2 border-brutal md:shadow-brutal-md inline-block transform -rotate-3">طردية</span>
+                    </span> <br class="hidden lg:block">
+                    بين أكلك وجمدانك!
+                </h1>
+                
+                <p class="fluid-p font-bold text-gray-700 max-w-lg mx-auto lg:mx-0 leading-relaxed bg-white/80 p-3 md:p-4 border-2 border-brand-dark shadow-brutal backdrop-blur-sm rounded-xl text-right">
+                    هوبا بيتزا مش مجرد أكل، ده السر المشترك لأي معلم. كل ما تاكل أكتر، فرصة إنك تبقى حريف جيلك بتكبر!
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4 md:pt-8">
+                    <a href="#menu" class="bg-brand-red text-white border-brutal shadow-brutal md:shadow-brutal-md text-xl md:text-2xl font-black py-3 md:py-4 px-6 md:px-10 hover:bg-brand-dark transition-colors btn-brutal flex justify-center items-center gap-3">
+                        اطلب العظمة <i class="fa-solid fa-rocket"></i>
+                    </a>
+                    <a href="#about" class="bg-white text-brand-dark border-brutal shadow-brutal md:shadow-brutal-md text-lg md:text-xl font-black py-3 md:py-4 px-6 md:px-8 hover:bg-brand-blue hover:text-white transition-colors btn-brutal flex justify-center items-center gap-3 transform sm:rotate-2">
+                        سر الصنعة <i class="fa-solid fa-eye"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Image & Graphics -->
+            <div class="relative reveal h-[350px] sm:h-[450px] lg:h-[700px] flex justify-center items-center order-1 lg:order-2">
+                <!-- Main Focus -->
+                <div class="relative z-20 float-slow w-full max-w-[280px] sm:max-w-[400px] lg:max-w-[500px]">
+                    <img src="https://freepngimg.com/thumb/pizza/34-pizza-png-image.png" alt="Pizza" class="w-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.4)]">
+                </div>
+
+                <!-- Street Style Floating Elements (Scaled for mobile) -->
+                <div class="absolute top-5 right-0 md:top-10 md:right-0 z-30 float-fast bg-brand-yellow border-brutal p-2 md:p-3 rounded-xl shadow-brutal transform rotate-12 scale-75 md:scale-100">
+                    <i class="fa-solid fa-gamepad text-3xl md:text-5xl text-brand-dark"></i>
+                </div>
+                
+                <div class="absolute bottom-10 right-0 md:bottom-20 md:right-10 z-30 float-slow bg-white border-brutal px-2 py-1 md:px-4 md:py-2 font-black text-lg md:text-2xl shadow-brutal transform -rotate-12 scale-90 md:scale-100">
+                    🔥 للحريفة فقط
+                </div>
+
+                <div class="absolute top-1/3 left-0 md:top-1/2 md:left-0 z-10 float-fast bg-brand-blue border-brutal p-3 md:p-4 rounded-full shadow-brutal scale-75 md:scale-100">
+                    <i class="fa-solid fa-bolt text-2xl md:text-4xl text-white"></i>
+                </div>
+
+                <div class="absolute bottom-5 left-5 md:bottom-10 md:left-1/4 z-30 float-slow bg-brand-pink border-brutal p-1 md:p-2 rounded-lg shadow-brutal transform rotate-6 scale-75 md:scale-100">
+                    <img src="https://freepngimg.com/thumb/tomato/22-tomato-png-image.png" alt="Tomato" class="w-10 md:w-16">
+                </div>
+                
+                <!-- Background Retro Shape -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[450px] md:h-[450px] bg-brand-dark rounded-[30px] md:rounded-[40px] transform rotate-45 border-4 border-brand-yellow opacity-10 -z-10"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="relative z-20 flex flex-col transform -rotate-2 scale-105 my-8 md:my-10 bg-brand-light">
+        <!-- Marquee 1 -->
+        <div class="marquee-wrapper bg-brand-yellow py-2 md:py-3">
+            <div class="marquee-content flex gap-4 md:gap-8 items-center text-brand-dark font-black text-xl md:text-3xl uppercase">
+                <span>🔥 للجامدين فقط</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🍕 الطعم اللي بيخطفك</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🛹 تانية في حتة</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🚀 أسرع دليفري في المجرة</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🔥 للجامدين فقط</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🍕 الطعم اللي بيخطفك</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🛹 تانية في حتة</span>
+                <span class="text-white text-stroke">x</span>
+                <span>🚀 أسرع دليفري في المجرة</span>
+            </div>
+        </div>
+        <!-- Marquee 2 (Reverse) -->
+        <div class="marquee-wrapper bg-brand-dark py-2 border-t-0">
+            <div class="marquee-content reverse flex gap-4 md:gap-8 items-center text-white font-black text-lg md:text-2xl uppercase">
+                <span>CHEESE PULL 🧀</span>
+                <span class="text-brand-red">///</span>
+                <span>STREET FOOD VIBES 🛹</span>
+                <span class="text-brand-red">///</span>
+                <span>EXTRA SPICY 🌶️</span>
+                <span class="text-brand-red">///</span>
+                <span>100% FRESH 🍃</span>
+                <span class="text-brand-red">///</span>
+                <span>CHEESE PULL 🧀</span>
+                <span class="text-brand-red">///</span>
+                <span>STREET FOOD VIBES 🛹</span>
+                <span class="text-brand-red">///</span>
+                <span>EXTRA SPICY 🌶️</span>
+                <span class="text-brand-red">///</span>
+                <span>100% FRESH 🍃</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="about" class="py-16 md:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="text-center mb-12 md:mb-16 reveal">
+                <div class="inline-block bg-brand-dark text-white font-black text-lg md:text-xl px-4 py-1 md:px-6 md:py-2 border-brutal shadow-brutal transform rotate-2 mb-4 md:mb-6">
+                    السر المشترك
+                </div>
+                <h2 class="fluid-h2 font-black">ليه هوبا <span class="text-brand-red underline decoration-brand-yellow decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">رقم ١؟</span></h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-brand-yellow p-6 md:p-8 border-brutal shadow-brutal card-hover transition-all reveal-scale relative overflow-hidden group">
+                    <div class="text-5xl md:text-6xl mb-4 md:mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-transform">🔥</div>
+                    <h3 class="text-xl md:text-2xl font-black mb-3 md:mb-4">فرن بلدي بلمسة مودرن</h3>
+                    <p class="font-bold text-gray-800 text-sm md:text-base leading-relaxed">عجينة مقرمشة من بره وهشة من جوه زي السحابة، بتستوي على نار هادية تظبط المود.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="bg-brand-pink p-6 md:p-8 border-brutal shadow-brutal card-hover transition-all reveal-scale relative overflow-hidden group" style="transition-delay: 100ms;">
+                    <div class="text-5xl md:text-6xl mb-4 md:mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-transform">🥬</div>
+                    <h3 class="text-xl md:text-2xl font-black mb-3 md:mb-4">كل حاجة فريش</h3>
+                    <p class="font-bold text-gray-800 text-sm md:text-base leading-relaxed">الخضار بييجي من الغيط، واللحوم طازة كل يوم. الجودة عندنا خط أحمر!</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-brand-blue p-6 md:p-8 border-brutal shadow-brutal card-hover transition-all reveal-scale relative overflow-hidden group" style="transition-delay: 200ms;">
+                    <div class="text-5xl md:text-6xl mb-4 md:mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-transform">🧀</div>
+                    <h3 class="text-xl md:text-2xl font-black mb-3 md:mb-4">جبنة لحد السما</h3>
+                    <p class="font-bold text-gray-800 text-sm md:text-base leading-relaxed">ميكس جبن بيمط معاك لحد ما تقول كفاية. الموزاريلا هنا حكاية تانية.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-brand-green p-6 md:p-8 border-brutal shadow-brutal card-hover transition-all reveal-scale relative overflow-hidden group" style="transition-delay: 300ms;">
+                    <div class="text-5xl md:text-6xl mb-4 md:mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-transform">🚀</div>
+                    <h3 class="text-xl md:text-2xl font-black mb-3 md:mb-4">أسرع دليفري</h3>
+                    <p class="font-bold text-gray-800 text-sm md:text-base leading-relaxed">أوردرك بيوصلك وهو لسه بيدخن. طيارين هوبا مبيهزروش في الوقت.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="py-16 md:py-24 bg-brand-dark text-brand-light relative z-10 border-t-8 border-brand-yellow overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiMzMzMiLz48L3N2Zz4=')] opacity-30 pointer-events-none"></div>
+
+        <div class="container mx-auto px-4 md:px-8 relative z-20">
+            <div class="flex flex-col lg:flex-row justify-between items-center lg:items-end text-center lg:text-right mb-12 md:mb-16 reveal gap-6">
+                <div>
+                    <h3 class="text-brand-pink font-black text-xl md:text-2xl mb-2 tracking-wider transform -rotate-2 inline-block">المنيو الفاجر</h3>
+                    <h2 class="fluid-h2 font-black text-white">اختار اللي يظبط <span class="text-brand-yellow">مزاجك</span></h2>
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-wrap justify-center lg:justify-end gap-2 md:gap-3 w-full lg:w-auto">
+                    <button class="bg-brand-yellow text-brand-dark border-brutal px-4 py-2 md:px-6 md:py-2 font-black text-base md:text-lg hover:bg-white transition-colors">الكل</button>
+                    <button class="bg-white text-brand-dark border-brutal px-4 py-2 md:px-6 md:py-2 font-black text-base md:text-lg hover:bg-brand-yellow transition-colors shadow-[2px_2px_0px_0px_#FFD500] md:shadow-[4px_4px_0px_0px_#FFD500]">اللحوم</button>
+                    <button class="bg-white text-brand-dark border-brutal px-4 py-2 md:px-6 md:py-2 font-black text-base md:text-lg hover:bg-brand-yellow transition-colors shadow-[2px_2px_0px_0px_#FF3A3A] md:shadow-[4px_4px_0px_0px_#FF3A3A]">فراخ</button>
+                </div>
+            </div>
+
+            <!-- Menu Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+                
+                <!-- Item 1 -->
+                <div class="bg-white text-brand-dark border-[3px] md:border-[4px] border-black rounded-2xl p-5 md:p-6 shadow-brutal md:shadow-brutal-lg card-hover relative group reveal">
+                    <div class="absolute -top-4 -right-4 md:-top-5 md:-right-5 bg-brand-red text-white border-brutal px-3 py-1 md:px-4 md:py-1 font-black text-sm md:text-lg transform rotate-6 z-20 shadow-brutal">حراق 🔥</div>
+                    
+                    <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto mb-4 md:mb-6 flex justify-center items-center">
+                        <div class="absolute inset-0 bg-brand-yellow rounded-full transform -rotate-6 scale-90 group-hover:rotate-12 transition-transform duration-500 border-brutal"></div>
+                        <img src="https://freepngimg.com/thumb/pizza/34-pizza-png-image.png" alt="Pizza" class="w-full object-cover relative z-10 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-500 drop-shadow-xl">
+                    </div>
+                    
+                    <h4 class="text-2xl md:text-3xl font-black mb-2 md:mb-3">بيبروني بركان</h4>
+                    <p class="font-bold text-gray-600 text-sm md:text-base mb-4 md:mb-6 border-b-4 border-dashed border-gray-300 pb-4 md:pb-6">دبل بيبروني إيطالي مع هلابينو سبايسي وجبنة موزاريلا سايحة بتمط.</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-xs md:text-sm font-black text-gray-400 line-through">٢٠٠ ج.م</span>
+                            <span class="text-3xl md:text-4xl font-black text-brand-red">١٦٠ <span class="text-lg md:text-xl text-brand-dark">ج.م</span></span>
+                        </div>
+                        <button onclick="addToCart('بيبروني بركان')" class="bg-brand-dark text-brand-yellow w-12 h-12 md:w-16 md:h-16 rounded-full border-brutal flex items-center justify-center hover:bg-brand-yellow hover:text-brand-dark transition-colors btn-brutal">
+                            <i class="fa-solid fa-plus text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="bg-white text-brand-dark border-[3px] md:border-[4px] border-black rounded-2xl p-5 md:p-6 shadow-brutal md:shadow-brutal-lg card-hover relative group reveal" style="transition-delay: 100ms;">
+                    <div class="absolute -top-4 -right-4 md:-top-5 md:-right-5 bg-brand-yellow text-brand-dark border-brutal px-3 py-1 md:px-4 md:py-1 font-black text-sm md:text-lg transform -rotate-3 z-20 shadow-brutal">الوحش 👑</div>
+                    
+                    <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto mb-4 md:mb-6 flex justify-center items-center">
+                        <div class="absolute inset-0 bg-brand-pink rounded-full transform rotate-12 scale-90 group-hover:-rotate-6 transition-transform duration-500 border-brutal"></div>
+                        <img src="https://freepngimg.com/thumb/pizza/2-pizza-png-image.png" alt="Pizza" class="w-full object-cover relative z-10 group-hover:scale-110 group-hover:-rotate-[15deg] transition-all duration-500 drop-shadow-xl">
+                    </div>
+                    
+                    <h4 class="text-2xl md:text-3xl font-black mb-2 md:mb-3">هوبا سبيشيال</h4>
+                    <p class="font-bold text-gray-600 text-sm md:text-base mb-4 md:mb-6 border-b-4 border-dashed border-gray-300 pb-4 md:pb-6">ميكس لحوم مع خلطة هوبا السرية، بصل مكرمل وصوص الباربكيو.</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-xs md:text-sm font-black text-gray-400 invisible">.</span>
+                            <span class="text-3xl md:text-4xl font-black text-brand-red">١٨٥ <span class="text-lg md:text-xl text-brand-dark">ج.م</span></span>
+                        </div>
+                        <button onclick="addToCart('هوبا سبيشيال')" class="bg-brand-dark text-brand-yellow w-12 h-12 md:w-16 md:h-16 rounded-full border-brutal flex items-center justify-center hover:bg-brand-yellow hover:text-brand-dark transition-colors btn-brutal">
+                            <i class="fa-solid fa-plus text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="bg-white text-brand-dark border-[3px] md:border-[4px] border-black rounded-2xl p-5 md:p-6 shadow-brutal md:shadow-brutal-lg card-hover relative group reveal" style="transition-delay: 200ms;">
+                    <div class="absolute -top-4 -left-4 md:-top-5 md:-left-5 bg-brand-green text-brand-dark border-brutal px-3 py-1 md:px-4 md:py-1 font-black text-sm md:text-lg transform rotate-6 z-20 shadow-brutal">للمزاجنجية 🤤</div>
+                    
+                    <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto mb-4 md:mb-6 flex justify-center items-center">
+                        <div class="absolute inset-0 bg-brand-blue rounded-full transform rotate-6 scale-90 group-hover:rotate-45 transition-transform duration-500 border-brutal"></div>
+                        <img src="https://freepngimg.com/thumb/pizza/5-pizza-png-image.png" alt="Pizza" class="w-full object-cover relative z-10 group-hover:scale-110 group-hover:rotate-[10deg] transition-all duration-500 drop-shadow-xl">
+                    </div>
+                    
+                    <h4 class="text-2xl md:text-3xl font-black mb-2 md:mb-3">تشيكن رانش</h4>
+                    <p class="font-bold text-gray-600 text-sm md:text-base mb-4 md:mb-6 border-b-4 border-dashed border-gray-300 pb-4 md:pb-6">قطع فراخ مشوية، مشروم فريش، غرقانة في صوص الرانش الغني.</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-xs md:text-sm font-black text-gray-400 invisible">.</span>
+                            <span class="text-3xl md:text-4xl font-black text-brand-red">١٧٠ <span class="text-lg md:text-xl text-brand-dark">ج.م</span></span>
+                        </div>
+                        <button onclick="addToCart('تشيكن رانش')" class="bg-brand-dark text-brand-yellow w-12 h-12 md:w-16 md:h-16 rounded-full border-brutal flex items-center justify-center hover:bg-brand-yellow hover:text-brand-dark transition-colors btn-brutal">
+                            <i class="fa-solid fa-plus text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Full Menu Button -->
+            <div class="text-center mt-12 md:mt-16 reveal">
+                <button class="bg-white text-brand-dark border-brutal shadow-brutal md:shadow-brutal-md text-xl md:text-2xl font-black py-3 px-8 md:py-4 md:px-12 hover:bg-brand-yellow transition-colors btn-brutal inline-flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto">
+                    شوف المنيو كامل <i class="fa-solid fa-book-open"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 md:py-20 bg-brand-yellow border-y-[6px] md:border-y-8 border-brand-dark overflow-hidden relative">
+        <div class="container mx-auto px-4 relative z-10 flex flex-col items-center">
+            
+            <div class="bg-white border-[4px] md:border-[6px] border-brand-dark shadow-brutal md:shadow-[15px_15px_0px_0px_rgba(17,17,17,1)] p-6 md:p-16 max-w-4xl w-full text-center relative reveal-scale transform -rotate-1 hover:rotate-0 transition-transform">
+                <!-- Decorative Tape -->
+                <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 w-24 md:w-32 h-6 md:h-8 bg-gray-300/80 transform rotate-2 z-20 backdrop-blur-sm"></div>
+                
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6 uppercase text-brand-dark">عرض الصحاب الجدعان!</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 mb-6 md:mb-8">
+                    <div class="flex-1 text-center md:text-right order-2 md:order-1">
+                        <p class="text-lg md:text-2xl font-bold leading-relaxed">
+                            ٢ بيتزا لارج من اختيارك + ٢ بطاطس محمرة + لتر كولا بيبسي، كل ده بـ <span class="bg-brand-red text-white px-2 py-1 md:px-3 md:py-1 border-2 border-brand-dark transform inline-block rotate-3 mt-1 md:mt-0">٣٩٩ جنيه</span> بس!
+                        </p>
+                        <p class="mt-4 font-black text-gray-500 text-base md:text-lg">استخدم كود: <span class="text-brand-dark bg-brand-yellow px-2 py-1 border border-dashed border-brand-dark inline-block mt-1">SA7B50</span></p>
+                    </div>
+                    <div class="w-48 h-48 md:w-64 md:h-64 bg-brand-pink border-brutal rounded-full flex items-center justify-center shadow-brutal relative order-1 md:order-2 shrink-0">
+                        <img src="https://freepngimg.com/thumb/pizza/34-pizza-png-image.png" class="w-40 md:w-56 absolute drop-shadow-2xl animate-spin-slow" style="animation: bounceSpin 10s infinite linear;" alt="Offer">
+                        <div class="absolute -bottom-2 -left-2 md:-bottom-4 md:-left-4 bg-brand-dark text-white font-black text-lg md:text-xl p-3 md:p-4 border-2 border-white rounded-full transform -rotate-12 shadow-lg">وفر ٣٠٪</div>
+                    </div>
+                </div>
+                <button class="w-full sm:w-auto bg-brand-dark text-white border-brutal md:shadow-brutal text-xl md:text-2xl font-black py-3 px-8 md:py-4 md:px-16 hover:bg-brand-red transition-colors btn-brutal">
+                    اطلب العرض فوراً 🚀
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="branches" class="bg-brand-light pt-16 md:pt-24 pb-8 md:pb-12 border-t-8 border-brand-dark relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16 border-b-4 border-brand-dark pb-12 md:pb-16 text-center sm:text-right">
+                
+                <!-- Brand Info -->
+                <div class="space-y-4 md:space-y-6 flex flex-col items-center sm:items-start">
+                    <a href="#" class="flex items-center gap-2 md:gap-3">
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-brand-dark flex items-center justify-center rounded-full border-2 border-white shadow-[2px_2px_0px_0px_#FFD500] md:shadow-[4px_4px_0px_0px_#FFD500]">
+                            <i class="fa-solid fa-fire text-brand-yellow text-xl md:text-2xl"></i>
+                        </div>
+                        <span class="text-3xl md:text-4xl font-black text-brand-dark">هوبا بيتزا</span>
+                    </a>
+                    <p class="font-bold text-gray-700 text-base md:text-lg leading-relaxed max-w-xs">
+                        بتاعة الجامدين فقط. أكل شوارع بلمسة عالمية ومزاج عالي. 
+                    </p>
+                    <div class="flex gap-3 md:gap-4 justify-center sm:justify-start w-full">
+                        <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-white border-brutal flex items-center justify-center text-lg md:text-xl text-brand-dark hover:bg-brand-blue hover:text-white transition-colors shadow-brutal btn-brutal"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-white border-brutal flex items-center justify-center text-lg md:text-xl text-brand-dark hover:bg-brand-pink hover:text-white transition-colors shadow-brutal btn-brutal"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-white border-brutal flex items-center justify-center text-lg md:text-xl text-brand-dark hover:bg-brand-dark hover:text-white transition-colors shadow-brutal btn-brutal"><i class="fa-brands fa-tiktok"></i></a>
+                    </div>
+                </div>
+
+                <!-- Fast Links -->
+                <div>
+                    <h4 class="text-xl md:text-2xl font-black text-brand-dark mb-4 md:mb-6 bg-brand-yellow inline-block px-3 py-1 border-brutal transform -rotate-2">روابط سريعة</h4>
+                    <ul class="space-y-3 md:space-y-4 font-bold text-base md:text-lg text-gray-800 inline-block text-right">
+                        <li><a href="#" class="hover:text-brand-red transition-colors flex items-center gap-2"><i class="fa-solid fa-arrow-left text-sm text-brand-red"></i> المنيو الكامل</a></li>
+                        <li><a href="#" class="hover:text-brand-red transition-colors flex items-center gap-2"><i class="fa-solid fa-arrow-left text-sm text-brand-red"></i> عروض الصحاب</a></li>
+                        <li><a href="#" class="hover:text-brand-red transition-colors flex items-center gap-2"><i class="fa-solid fa-arrow-left text-sm text-brand-red"></i> الشروط والأحكام</a></li>
+                        <li><a href="#" class="hover:text-brand-red transition-colors flex items-center gap-2"><i class="fa-solid fa-arrow-left text-sm text-brand-red"></i> الوظائف (لو جامد)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Locations -->
+                <div>
+                    <h4 class="text-xl md:text-2xl font-black text-brand-dark mb-4 md:mb-6 bg-brand-green inline-block px-3 py-1 border-brutal transform rotate-2">فروعنا فين؟</h4>
+                    <ul class="space-y-3 md:space-y-4 font-bold text-gray-800 text-sm md:text-base">
+                        <li class="bg-white p-2 md:p-3 border-brutal shadow-brutal-hover text-right">📍 مدينة نصر، شارع عباس العقاد</li>
+                        <li class="bg-white p-2 md:p-3 border-brutal shadow-brutal-hover text-right">📍 المهندسين، شارع جامعة الدول</li>
+                        <li class="bg-white p-2 md:p-3 border-brutal shadow-brutal-hover text-right">📍 التجمع الخامس، شارع التسعين</li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="flex flex-col items-center sm:items-start">
+                    <h4 class="text-xl md:text-2xl font-black text-brand-dark mb-4 md:mb-6 bg-brand-pink inline-block px-3 py-1 border-brutal transform -rotate-1">ألو هوبا</h4>
+                    <div class="bg-brand-dark text-white p-5 md:p-6 border-brutal shadow-brutal relative transform rotate-1 w-full max-w-[250px] text-right">
+                        <div class="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-brand-red w-8 h-8 md:w-10 md:h-10 rounded-full border-brutal flex items-center justify-center animate-bounce">
+                            <i class="fa-solid fa-phone text-white text-sm md:text-base"></i>
+                        </div>
+                        <p class="text-gray-400 mb-1 md:mb-2 font-bold text-sm md:text-base">الخط الساخن:</p>
+                        <p class="text-3xl md:text-4xl font-black tracking-widest text-brand-yellow text-left" dir="ltr">19XXX</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-right">
+                <p class="font-black text-lg md:text-xl text-brand-dark">
+                    © <span id="year"></span> هوبا بيتزا. جميع الحقوق محفوظة للجامدين.
+                </p>
+                <div class="text-gray-500 font-bold flex gap-4 text-sm md:text-base">
+                    <span>صُنع بحب وجبنة سايحة 🧀</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set Year dynamically
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 1. Preloader & Intro Animation
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('loader-hide');
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    triggerReveals();
+                }, 800);
+            }, 1000); // Quickened slightly for better UX
+        });
+
+        // 2. Navbar Styling on Scroll
+        const navbar = document.getElementById('navbar');
+        const navContainer = document.getElementById('nav-container');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navContainer.classList.add('py-1', 'shadow-brutal');
+                navContainer.classList.remove('py-3');
+            } else {
+                navContainer.classList.add('py-3');
+                navContainer.classList.remove('py-1', 'shadow-brutal');
+            }
+        });
+
+        // 3. Mobile Menu Toggle Logic
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let menuOpen = false;
+
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            const spans = mobileMenuBtn.querySelectorAll('span');
+            
+            if(menuOpen) {
+                mobileMenu.classList.add('open');
+                // Hamburger to X animation
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+            } else {
+                mobileMenu.classList.remove('open');
+                // X to Hamburger animation
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if(menuOpen) toggleMenu();
+            });
+        });
+
+        // 4. Scroll Reveal Logic
+        const revealElements = document.querySelectorAll('.reveal, .reveal-scale');
+        
+        function triggerReveals() {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 50; // Triggers slightly earlier on mobile
+
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', triggerReveals);
+
+        // 5. Custom Cart & Toast Logic
+        let cartTotal = 0;
+        const cartCountEl = document.getElementById('cart-count');
+        const cartBtn = document.getElementById('cart-btn');
+        const toastContainer = document.getElementById('toast-container');
+
+        window.addToCart = function(itemName) {
+            cartTotal++;
+            cartCountEl.textContent = cartTotal;
+            
+            // Animate Button
+            cartBtn.classList.remove('animate-bounce');
+            void cartBtn.offsetWidth; // Force Reflow
+            cartBtn.classList.add('animate-bounce');
+
+            showToast(`🔥 تمت إضافة ${itemName} للطلب!`);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <i class="fa-solid fa-check-circle text-brand-green text-xl md:text-2xl"></i>
+                <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Wait a tick to allow browser to render initial state, then show
+            setTimeout(() => toast.classList.add('show'), 50);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400); // Wait for transition
+            }, 3000);
+        }
+
+        // 6. Smooth Scroll for Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    // Offset for fixed navbar
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
